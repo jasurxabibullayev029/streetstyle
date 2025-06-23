@@ -1,0 +1,145 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pul to'ldirish - StreetStil®</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <style>
+        body { background: #f5f6fa; }
+        .deposit-container {
+            padding: 40px 0;
+        }
+        .deposit-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 30px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .current-balance {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+        }
+        .balance-label {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+        .balance-amount {
+            color: #e74c3c;
+            font-size: 18px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .deposit-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .deposit-btn:hover {
+            background: linear-gradient(135deg, #764ba2, #667eea);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        .deposit-btn:disabled {
+            background: linear-gradient(135deg, #bdc3c7, #95a5a6);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+    {% csrf_token %}
+    <div class="deposit-container">
+        <div class="deposit-card">
+            <h3 class="mb-4 text-center"><i class="fas fa-credit-card"></i> Pul to'ldirish</h3>
+            <div class="current-balance mb-4">
+                <span class="balance-label">Joriy balans:</span>
+                <span class="balance-amount" id="currentBalance">{{ user_data.balance|floatformat:0 }} so'm</span>
+            </div>
+            <form id="depositForm">
+                <div class="form-group mb-3">
+                    <label for="amount">To'lov miqdori (so'm)</label>
+                    <input type="number" id="amount" name="amount" min="1000" step="1000" class="form-control" placeholder="10000" required>
+                    <small class="text-muted">Minimal to'lov: 1,000 so'm</small>
+                </div>
+                <div class="form-group mb-4">
+                    <label for="card_number">Karta raqami</label>
+                    <input type="text" id="card_number" name="card_number" class="form-control" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                    <small class="text-muted">16 ta raqam kiriting</small>
+                </div>
+                <button type="submit" class="deposit-btn" id="depositBtn">
+                    <i class="fas fa-credit-card"></i> Pul to'ldirish
+                </button>
+            </form>
+            <a href="{% url 'profile_settings' %}" class="btn btn-link mt-3 w-100">&larr; Profilga qaytish</a>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Card number formatting
+        document.getElementById('card_number').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+            let formattedValue = '';
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 4 === 0) {
+                    formattedValue += ' ';
+                }
+                formattedValue += value[i];
+            }
+            e.target.value = formattedValue;
+        });
+        // Deposit form submission
+        document.getElementById('depositForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const depositBtn = document.getElementById('depositBtn');
+            depositBtn.disabled = true;
+            depositBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> To\'lov amalga oshirilmoqda...';
+            fetch('{% url "deposit_money" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    document.getElementById('currentBalance').textContent = data.new_balance + ' so\'m';
+                    document.getElementById('depositForm').reset();
+                } else {
+                    alert('Xatolik: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Xatolik yuz berdi');
+            })
+            .finally(() => {
+                depositBtn.disabled = false;
+                depositBtn.innerHTML = '<i class="fas fa-credit-card"></i> Pul to\'ldirish';
+            });
+        });
+    </script>
+</body>
+</html> 

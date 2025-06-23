@@ -1,0 +1,374 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mening buyurtmalarim - StreetStil®</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <style>
+        .orders-container {
+            padding: 40px 0;
+        }
+        .order-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .order-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .order-main-info {
+            display: flex;
+            align-items: center;
+        }
+        .order-product-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .order-product-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .order-product-details {
+            flex: 1;
+        }
+        .order-product-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .order-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        .order-date {
+            color: #666;
+            font-size: 14px;
+        }
+        .order-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .order-items {
+            padding: 20px;
+        }
+        .order-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        .item-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 15px;
+        }
+        .item-details {
+            flex: 1;
+        }
+        .item-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .item-info {
+            color: #666;
+            font-size: 14px;
+        }
+        .item-price {
+            font-weight: bold;
+            color: #333;
+        }
+        .order-total {
+            background: #f8f9fa;
+            padding: 20px;
+            border-top: 1px solid #e9ecef;
+            text-align: right;
+        }
+        .total-amount {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+        .no-orders {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        .no-orders i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+        .back-btn {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .back-btn:hover {
+            background: #555;
+            color: white;
+            text-decoration: none;
+        }
+        .avatar-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Banner -->
+    <div class="top-banner">
+        <div class="banner-text">
+            KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <h1 class="logo">StreetStil®</h1>
+                </div>
+                <div class="col-md-6">
+                    <div class="search-bar">
+                        <input type="text" placeholder="qidirish" class="search-input">
+                    </div>
+                </div>
+                <div class="col-md-3 text-end">
+                    <div class="profile-section">
+                        <div class="profile-icon" onclick="toggleProfileMenu()">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="profile-header">
+                                <div class="profile-avatar">
+                                    {% if user_data.avatar %}
+                                        <img src="{{ user_data.avatar.url }}" alt="{{ user_data.name }}" class="avatar-img">
+                                    {% else %}
+                                        <i class="fas fa-user-circle"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="profile-info">
+                                    <h4>{{ user_data.name }}</h4>
+                                    <p>{{ user_data.email }}</p>
+                                </div>
+                            </div>
+                            <div class="profile-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Balans:</span>
+                                    <span class="stat-value">{{ user_data.balance|floatformat:0 }} so'm</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Buyurtmalar:</span>
+                                    <span class="stat-value">{{ user_data.orders_count }} ta</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Bonus ballar:</span>
+                                    <span class="stat-value">{{ user_data.bonus_points }}</span>
+                                </div>
+                            </div>
+                            <div class="profile-menu">
+                                <a href="{% url 'my_orders' %}" class="menu-item active">
+                                    <i class="fas fa-shopping-bag"></i>
+                                    Mening buyurtmalarim
+                                </a>
+                                <a href="#" class="menu-item">
+                                    <i class="fas fa-heart"></i>
+                                    Sevimlilar
+                                </a>
+                                <a href="{% url 'profile_settings' %}" class="menu-item">
+                                    <i class="fas fa-cog"></i>
+                                    Sozlamalar
+                                </a>
+                                <a href="{% url 'wallet' %}" class="menu-item">
+                                    <i class="fas fa-wallet"></i>
+                                    Hamyon
+                                </a>
+                                <a href="#" class="menu-item logout">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Chiqish
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="container">
+            <ul class="nav-list">
+                <li><a href="{% url 'product_list' %}" class="nav-link">Bosh sahifa</a></li>
+                <li><a href="#" class="nav-link">qayta sotuv yo'q</a></li>
+                <li><a href="#" class="nav-link">tizimlar</a></li>
+                <li><a href="#" class="nav-link">ko'zoynaklar</a></li>
+                <li><a href="#" class="nav-link">qalpoqlar va shapkalar</a></li>
+                <li><a href="#" class="nav-link">klub fudbolkalari<span class="new-badge">yangi</span></a></li>
+                <li><a href="#" class="nav-link">kiyimlar</a></li>
+                <li><a href="#" class="nav-link">aksessuarlar</a></li>
+                <li><a href="#" class="nav-link">hamkorliklar</a></li>
+                <li><a href="{% url 'about_us' %}" class="nav-link">biz haqida</a></li>
+                <li><a href="#" class="nav-link">kelgusi</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Orders Section -->
+    <section class="orders-container">
+        <div class="container">
+            <a href="{% url 'product_list' %}" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Bosh sahifaga qaytish
+            </a>
+            
+            <h2 class="section-title">Mening buyurtmalarim</h2>
+            
+            {% if orders %}
+                {% for order in orders %}
+                <div class="order-card">
+                    <div class="order-header">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                {% with first_item=order.items.first %}
+                                <div class="order-product-info">
+                                    <img src="{{ first_item.product.image.url }}" alt="{{ first_item.product.name }}" class="order-product-image">
+                                    <div class="order-product-details">
+                                        <div class="order-product-name">{{ first_item.product.name }}</div>
+                                        <div class="order-date">{{ order.created_at|date:"d.m.Y H:i" }}</div>
+                                    </div>
+                                </div>
+                                {% endwith %}
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <span class="order-status status-completed">Bajarildi</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="order-items">
+                        {% for item in order.items.all %}
+                        <div class="order-item">
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="item-image">
+                            <div class="item-details">
+                                <div class="item-name">{{ item.product.name }}</div>
+                                <div class="item-info">
+                                    Razmer: {{ item.size }} | Miqdor: {{ item.quantity }} ta
+                                </div>
+                            </div>
+                            <div class="item-price">{{ item.price }} so'm</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="order-total">
+                        <div class="total-amount">Jami: {{ order.total_amount }} so'm</div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-orders">
+                    <i class="fas fa-shopping-bag"></i>
+                    <h3>Hali buyurtmalar yo'q</h3>
+                    <p>Birinchi buyurtmangizni qilish uchun mahsulotlar sahifasiga o'ting</p>
+                    <a href="{% url 'product_list' %}" class="btn btn-primary">Mahsulotlarni ko'rish</a>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h4>ZO'R NARSALAR</h4>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'about_us' %}">biz haqida</a></li>
+                        <li><a href="#">BLOG</a></li>
+                        <li><a href="#">HAMMA NARSANI SOTIB OLING</a></li>
+                        <li><a href="#">YANGI KELGANLAR</a></li>
+                        <li><a href="#">QALPOQLAR VA SHAPKALAR</a></li>
+                        <li><a href="#">KIYIMLAR</a></li>
+                        <li><a href="#">KO'ZOYNAKLAR</a></li>
+                        <li><a href="#">AKSESSUARLAR</a></li>
+                        <li><a href="#">HAMKORLIKLAR</a></li>
+                        <li><a href="#">Mukofotlar</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h4>ZAHIRIY NARSALAR</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">BUYURTMA KUZATISH</a></li>
+                        <li><a href="#">QAYTARISH</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h4>HUQUQIY</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">SHARTLAR VA SHAROITLAR</a></li>
+                        <li><a href="#">MAXFIYLIK SIYOSATI</a></li>
+                        <li><a href="#">YETKAZIB BERISH SIYOSATI</a></li>
+                        <li><a href="#">QAYTARISH SIYOSATI</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h4>Keling, bog'lanish</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">WHATSAPP</a></li>
+                        <li><a href="#">EMAIL</a></li>
+                        <li><a href="#">biz bilan bog'laning</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Mualliflik huquqi © 2025 StreetStil® - Bosh kiyimlar, Fudbolkalar, Quyosh ko'zoynaklari, Hamyonlar, Yuz niqoblari, Shapkalar. Skateboardlar</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleProfileMenu() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('show');
+        }
+    </script>
+</body>
+</html> 

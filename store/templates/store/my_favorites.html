@@ -1,0 +1,520 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sevimlilar - StreetStil®</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <style>
+        .favorites-container {
+            padding: 40px 0;
+        }
+        .favorites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        .favorite-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .favorite-card:hover {
+            transform: translateY(-5px);
+        }
+        .favorite-image {
+            position: relative;
+            height: 250px;
+            overflow: hidden;
+        }
+        .favorite-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .favorite-card:hover .favorite-img {
+            transform: scale(1.05);
+        }
+        .remove-favorite {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            color: #ff6b6b;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .remove-favorite:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+        .favorite-info {
+            padding: 20px;
+        }
+        .favorite-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .favorite-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .favorite-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .buy-btn {
+            flex: 1;
+            background: #333;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .buy-btn:hover {
+            background: #555;
+        }
+        .no-favorites {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        .no-favorites i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+        .back-btn {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .back-btn:hover {
+            background: #555;
+            color: white;
+            text-decoration: none;
+        }
+        .avatar-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    {% csrf_token %}
+    <!-- Top Banner -->
+    <div class="top-banner">
+        <div class="banner-text">
+            KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <h1 class="logo">StreetStil®</h1>
+                </div>
+                <div class="col-md-6">
+                    <div class="search-bar">
+                        <input type="text" placeholder="qidirish" class="search-input">
+                    </div>
+                </div>
+                <div class="col-md-3 text-end">
+                    <div class="profile-section">
+                        <div class="profile-icon" onclick="toggleProfileMenu()">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="profile-header">
+                                <div class="profile-avatar">
+                                    {% if user_data.avatar %}
+                                        <img src="{{ user_data.avatar.url }}" alt="{{ user_data.name }}" class="avatar-img">
+                                    {% else %}
+                                        <i class="fas fa-user-circle"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="profile-info">
+                                    <h4>{{ user_data.name }}</h4>
+                                    <p>{{ user_data.email }}</p>
+                                </div>
+                            </div>
+                            <div class="profile-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Balans:</span>
+                                    <span class="stat-value">{{ user_data.balance|floatformat:0 }} so'm</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Buyurtmalar:</span>
+                                    <span class="stat-value">{{ user_data.orders_count }} ta</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Bonus ballar:</span>
+                                    <span class="stat-value">{{ user_data.bonus_points }}</span>
+                                </div>
+                            </div>
+                            <div class="profile-menu">
+                                <a href="{% url 'my_orders' %}" class="menu-item">
+                                    <i class="fas fa-shopping-bag"></i>
+                                    Mening buyurtmalarim
+                                </a>
+                                <a href="{% url 'my_favorites' %}" class="menu-item active">
+                                    <i class="fas fa-heart"></i>
+                                    Sevimlilar
+                                </a>
+                                <a href="{% url 'profile_settings' %}" class="menu-item">
+                                    <i class="fas fa-cog"></i>
+                                    Sozlamalar
+                                </a>
+                                <a href="{% url 'wallet' %}" class="menu-item">
+                                    <i class="fas fa-wallet"></i>
+                                    Hamyon
+                                </a>
+                                <a href="#" class="menu-item logout">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Chiqish
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="container">
+            <ul class="nav-list">
+                <li><a href="{% url 'product_list' %}" class="nav-link">Bosh sahifa</a></li>
+                <li><a href="#" class="nav-link">qayta sotuv yo'q</a></li>
+                <li><a href="#" class="nav-link">tizimlar</a></li>
+                <li><a href="#" class="nav-link">ko'zoynaklar</a></li>
+                <li><a href="#" class="nav-link">qalpoqlar va shapkalar</a></li>
+                <li><a href="#" class="nav-link">klub fudbolkalari<span class="new-badge">yangi</span></a></li>
+                <li><a href="#" class="nav-link">kiyimlar</a></li>
+                <li><a href="#" class="nav-link">aksessuarlar</a></li>
+                <li><a href="#" class="nav-link">hamkorliklar</a></li>
+                <li><a href="{% url 'about_us' %}" class="nav-link">biz haqida</a></li>
+                <li><a href="#" class="nav-link">kelgusi</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Favorites Section -->
+    <section class="favorites-container">
+        <div class="container">
+            <a href="{% url 'product_list' %}" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Bosh sahifaga qaytish
+            </a>
+            
+            <h2 class="section-title">Sevimlilar</h2>
+            
+            {% if favorites %}
+                <div class="favorites-grid">
+                    {% for favorite in favorites %}
+                    <div class="favorite-card">
+                        <div class="favorite-image">
+                            <img src="{{ favorite.product.image.url }}" alt="{{ favorite.product.name }}" class="favorite-img">
+                            <button class="remove-favorite" onclick="removeFavorite({{ favorite.product.id }}, this)" title="Sevimlilardan olib tashlash">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="favorite-info">
+                            <h3 class="favorite-name">{{ favorite.product.name }}</h3>
+                            <p class="favorite-price">{{ favorite.product.price }} so'm</p>
+                            <div class="favorite-actions">
+                                <button class="buy-btn" onclick="openBuyModal({{ favorite.product.id }}, '{{ favorite.product.name }}', {{ favorite.product.price }})">
+                                    Sotib olish
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-favorites">
+                    <i class="fas fa-heart"></i>
+                    <h3>Hali sevimlilar yo'q</h3>
+                    <p>Sevimli mahsulotlaringizni qo'shish uchun mahsulotlar sahifasiga o'ting</p>
+                    <a href="{% url 'product_list' %}" class="btn btn-primary">Mahsulotlarni ko'rish</a>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Buy Modal -->
+    <div class="modal fade" id="buyModal" tabindex="-1" aria-labelledby="buyModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="buyModalLabel">Mahsulot sotib olish</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="product-details">
+                        <h6 id="modalProductName"></h6>
+                        <p id="modalProductPrice"></p>
+                    </div>
+                    <form id="buyForm">
+                        <input type="hidden" id="productId" name="product_id">
+                        <div class="mb-3">
+                            <label for="size" class="form-label">Razmer</label>
+                            <select class="form-select" id="size" name="size" required>
+                                <option value="">Razmer tanlang</option>
+                                <option value="XS">XS</option>
+                                <option value="S">S</option>
+                                <option value="M">M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                                <option value="XXL">XXL</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label">Miqdori</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="10" value="1" required>
+                        </div>
+                        <div class="total-section">
+                            <h6>Jami: <span id="totalPrice">0</span> so'm</h6>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor qilish</button>
+                    <button type="button" class="btn btn-primary" onclick="placeOrder()">Sotib olish</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h4>ZO'R NARSALAR</h4>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'about_us' %}">biz haqida</a></li>
+                        <li><a href="#">BLOG</a></li>
+                        <li><a href="#">HAMMA NARSANI SOTIB OLING</a></li>
+                        <li><a href="#">YANGI KELGANLAR</a></li>
+                        <li><a href="#">QALPOQLAR VA SHAPKALAR</a></li>
+                        <li><a href="#">KIYIMLAR</a></li>
+                        <li><a href="#">KO'ZOYNAKLAR</a></li>
+                        <li><a href="#">AKSESSUARLAR</a></li>
+                        <li><a href="#">HAMKORLIKLAR</a></li>
+                        <li><a href="#">Mukofotlar</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h4>ZAHIRIY NARSALAR</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">BUYURTMA KUZATISH</a></li>
+                        <li><a href="#">QAYTARISH</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h4>HUQUQIY</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">SHARTLAR VA SHAROITLAR</a></li>
+                        <li><a href="#">MAXFIYLIK SIYOSATI</a></li>
+                        <li><a href="#">YETKAZIB BERISH SIYOSATI</a></li>
+                        <li><a href="#">QAYTARISH SIYOSATI</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h4>Keling, bog'lanish</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">WHATSAPP</a></li>
+                        <li><a href="#">EMAIL</a></li>
+                        <li><a href="#">biz bilan bog'laning</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Mualliflik huquqi © 2025 StreetStil® - Bosh kiyimlar, Fudbolkalar, Quyosh ko'zoynaklari, Hamyonlar, Yuz niqoblari, Shapkalar. Skateboardlar</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentProductPrice = 0;
+        let buyModal;
+
+        function toggleProfileMenu() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        function removeFavorite(productId, button) {
+            const formData = new FormData();
+            formData.append('product_id', productId);
+            
+            fetch('{% url "toggle_favorite" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove the card from the page
+                    button.closest('.favorite-card').remove();
+                    showNotification(data.message);
+                    
+                    // Check if no more favorites
+                    const remainingCards = document.querySelectorAll('.favorite-card');
+                    if (remainingCards.length === 0) {
+                        location.reload(); // Reload to show empty state
+                    }
+                } else {
+                    alert('Xatolik: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Xatolik yuz berdi');
+            });
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #333;
+                color: white;
+                padding: 10px 20px;
+                border-radius: 5px;
+                z-index: 1000;
+                font-size: 14px;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function openBuyModal(productId, productName, productPrice) {
+            currentProductPrice = productPrice;
+            document.getElementById('productId').value = productId;
+            document.getElementById('modalProductName').textContent = productName;
+            document.getElementById('modalProductPrice').textContent = productPrice + ' so\'m';
+            document.getElementById('totalPrice').textContent = productPrice;
+            
+            // Reset form
+            document.getElementById('size').value = '';
+            document.getElementById('quantity').value = '1';
+            document.querySelector('.btn-primary').disabled = true;
+            document.querySelector('.btn-primary').textContent = 'Razmer va miqdorni tanlang';
+            
+            buyModal = new bootstrap.Modal(document.getElementById('buyModal'));
+            buyModal.show();
+        }
+
+        function updateTotal() {
+            const quantity = document.getElementById('quantity').value;
+            const size = document.getElementById('size').value;
+            const total = currentProductPrice * quantity;
+            document.getElementById('totalPrice').textContent = total;
+            
+            // Enable/disable buy button
+            const buyButton = document.querySelector('.btn-primary');
+            if (size && quantity > 0) {
+                buyButton.disabled = false;
+                buyButton.textContent = 'Sotib olish';
+            } else {
+                buyButton.disabled = true;
+                buyButton.textContent = 'Razmer va miqdorni tanlang';
+            }
+        }
+
+        function placeOrder() {
+            const size = document.getElementById('size').value;
+            const quantity = document.getElementById('quantity').value;
+            
+            if (!size) {
+                alert('Iltimos, razmer tanlang!');
+                return;
+            }
+            
+            if (!quantity || quantity < 1) {
+                alert('Iltimos, miqdorni tanlang!');
+                return;
+            }
+            
+            const form = document.getElementById('buyForm');
+            const formData = new FormData(form);
+            
+            // Show loading state
+            const buyButton = document.querySelector('.btn-primary');
+            buyButton.disabled = true;
+            buyButton.textContent = 'Buyurtma berilmoqda...';
+            
+            fetch('{% url "place_order" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    buyModal.hide();
+                    // Update user stats if needed
+                    location.reload();
+                } else {
+                    alert('Xatolik: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Xatolik yuz berdi');
+            })
+            .finally(() => {
+                buyButton.disabled = false;
+                buyButton.textContent = 'Sotib olish';
+            });
+        }
+
+        // Add event listeners for form changes
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('size').addEventListener('change', updateTotal);
+            document.getElementById('quantity').addEventListener('change', updateTotal);
+        });
+    </script>
+</body>
+</html> 

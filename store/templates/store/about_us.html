@@ -1,0 +1,623 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biz haqida - StreetStil®</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <style>
+        /* About Page Specific Styles */
+        .about-hero {
+            background: #000;
+            color: #fff;
+            padding: 80px 0;
+            text-align: center;
+        }
+        
+        .about-hero h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .about-hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .about-section {
+            padding: 80px 0;
+            background: #f8f9fa;
+        }
+        
+        .about-card {
+            background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            border: 1px solid #eee;
+        }
+        
+        .about-card h3 {
+            color: #000;
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        
+        .about-card p {
+            color: #666;
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+        
+        .stats-section {
+            background: #000;
+            color: #fff;
+            padding: 60px 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+        
+        .team-section {
+            padding: 80px 0;
+            background: #fff;
+        }
+        
+        .team-card {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .team-avatar {
+            width: 120px;
+            height: 120px;
+            background: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 3rem;
+            color: #fff;
+        }
+        
+        .team-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 10px;
+        }
+        
+        .team-role {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .values-section {
+            padding: 80px 0;
+            background: #f8f9fa;
+        }
+        
+        .value-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 1px solid #eee;
+        }
+        
+        .value-icon {
+            width: 80px;
+            height: 80px;
+            background: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2rem;
+            color: #fff;
+        }
+        
+        .value-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 15px;
+        }
+        
+        .value-description {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .contact-section {
+            padding: 80px 0;
+            background: #000;
+            color: #fff;
+        }
+        
+        .contact-info {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .contact-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 1.5rem;
+        }
+        
+        .contact-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .contact-detail {
+            opacity: 0.8;
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #fff;
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            z-index: 1000;
+            border: 2px solid #000;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: #000;
+            color: #fff;
+        }
+        
+        @media (max-width: 768px) {
+            .about-hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .about-hero p {
+                font-size: 1rem;
+            }
+            
+            .about-card {
+                padding: 25px;
+            }
+            
+            .stat-number {
+                font-size: 2.5rem;
+            }
+            
+            .back-btn {
+                top: 10px;
+                left: 10px;
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% csrf_token %}
+    
+    <!-- Back Button -->
+    <a href="{% url 'product_list' %}" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Bosh sahifa
+    </a>
+    
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <h1 class="logo">StreetStil®</h1>
+                </div>
+                <div class="col-md-6">
+                    <div class="search-bar">
+                        <form method="get" action="{% url 'product_list' %}">
+                            <input type="text" placeholder="qidirish" class="search-input" name="q" value="{{ request.GET.q|default:'' }}">
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-3 text-end">
+                    {% if user.is_authenticated %}
+                    <div class="profile-section">
+                        <div class="profile-icon" onclick="toggleProfileMenu()">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="profile-header">
+                                <div class="profile-avatar">
+                                    {% if user_data.avatar %}
+                                        <img src="{{ user_data.avatar.url }}" alt="{{ user_data.name }}" class="avatar-img">
+                                    {% else %}
+                                        <i class="fas fa-user-circle"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="profile-info">
+                                    <h4>{{ user_data.name }}</h4>
+                                    <p>{{ user_data.email }}</p>
+                                </div>
+                            </div>
+                            <div class="profile-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Balans:</span>
+                                    <span class="stat-value">{{ user_data.balance|floatformat:0 }} so'm</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Buyurtmalar:</span>
+                                    <span class="stat-value">{{ user_data.orders_count }} ta</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Bonus ballar:</span>
+                                    <span class="stat-value">{{ user_data.bonus_points }}</span>
+                                </div>
+                            </div>
+                            <div class="profile-menu">
+                                <a href="{% url 'my_orders' %}" class="menu-item">
+                                    <i class="fas fa-shopping-bag"></i>
+                                    Mening buyurtmalarim
+                                </a>
+                                <a href="{% url 'my_favorites' %}" class="menu-item">
+                                    <i class="fas fa-heart"></i>
+                                    Sevimlilar
+                                </a>
+                                <a href="{% url 'profile_settings' %}" class="menu-item">
+                                    <i class="fas fa-cog"></i>
+                                    Sozlamalar
+                                </a>
+                                <a href="{% url 'wallet' %}" class="menu-item">
+                                    <i class="fas fa-wallet"></i>
+                                    Hamyon
+                                </a>
+                                <a href="{% url 'user_logout' %}" class="menu-item logout">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Chiqish
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="auth-section">
+                        <button class="register-btn" onclick="openAuthModal()">
+                            <i class="fas fa-user-plus"></i>
+                            Registratsiya
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="container">
+            <ul class="nav-list">
+                <li><a href="{% url 'product_list' %}" class="nav-link">Bosh sahifa</a></li>
+                <li><a href="#" class="nav-link">qayta sotuv yo'q</a></li>
+                <li><a href="#" class="nav-link">tizimlar</a></li>
+                <li><a href="#" class="nav-link">ko'zoynaklar</a></li>
+                <li><a href="#" class="nav-link">qalpoqlar va shapkalar</a></li>
+                <li><a href="#" class="nav-link">klub fudbolkalari<span class="new-badge">yangi</span></a></li>
+                <li><a href="#" class="nav-link">kiyimlar</a></li>
+                <li><a href="#" class="nav-link">aksessuarlar</a></li>
+                <li><a href="#" class="nav-link">hamkorliklar</a></li>
+                <li><a href="{% url 'about_us' %}" class="nav-link">biz haqida</a></li>
+                <li><a href="#" class="nav-link">kelgusi</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="about-hero">
+        <div class="container">
+            <h1>StreetStil® haqida</h1>
+            <p>O'zbekistondagi eng zamonaviy ko'cha kiyimlari do'koni</p>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="about-card">
+                        <h3>Bizning tarix</h3>
+                        <p>StreetStil® 2020-yilda Toshkent shahrida tashkil topgan bo'lib, O'zbekistondagi yoshlar uchun eng zamonaviy va sifatli ko'cha kiyimlarini taqdim etish maqsadida yaratilgan. Biz yoshlar uslubini va moda trendlarini chuqur tushunamiz va ularga eng yaxshi mahsulotlarni taklif qilamiz.</p>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="about-card">
+                        <h3>Bizning missiya</h3>
+                        <p>Har bir foydalanuvchi o'z uslubini topishi va o'zini ishonchli his qilishi uchun eng sifatli va zamonaviy kiyimlarni taqdim etish. Biz faqat mahsulot sotmaymiz, balki uslub va individualizmni qo'llab-quvvatlaymiz.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <span class="stat-number">10K+</span>
+                        <div class="stat-label">Mamnun mijozlar</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <span class="stat-number">500+</span>
+                        <div class="stat-label">Mahsulot turlari</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <span class="stat-number">5</span>
+                        <div class="stat-label">Yillik tajriba</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <span class="stat-number">24/7</span>
+                        <div class="stat-label">Mijozlar xizmati</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Values Section -->
+    <section class="values-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="value-card">
+                        <div class="value-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h4 class="value-title">Sifat</h4>
+                        <p class="value-description">Biz faqat eng yuqori sifatli materiallar va ishlab chiqarish standartlarini qo'llaymiz. Har bir mahsulotimiz sizning kutilmalaringizni oshirish uchun yaratilgan.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="value-card">
+                        <div class="value-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h4 class="value-title">Mijozlar mamnuniyati</h4>
+                        <p class="value-description">Sizning mamnuniyatingiz bizning eng muhim ustuvorligimizdir. Biz har doim mijozlarimizning fikrlarini tinglaymiz va ularning ehtiyojlarini qondirish uchun ishlaymiz.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="value-card">
+                        <div class="value-icon">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <h4 class="value-title">Innovatsiya</h4>
+                        <p class="value-description">Biz doimo zamonaviy trendlar va texnologiyalarni kuzatib boramiz va mijozlarimizga eng yangi va qiziqarli mahsulotlarni taklif qilamiz.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="team-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 style="color: #000; font-weight: bold; margin-bottom: 20px;">Bizning jamoa</h2>
+                    <p style="color: #666; font-size: 1.1rem;">StreetStil® ning orqasida turgan professional jamoa</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="team-card">
+                        <div class="team-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h4 class="team-name">Jasur Xabibullayev</h4>
+                        <p class="team-role">Bosh direktor</p>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="team-card">
+                        <div class="team-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h4 class="team-name">Miryaxyo Husanov</h4>
+                        <p class="team-role">Bosh direktor</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 style="margin-bottom: 20px;">Biz bilan bog'laning</h2>
+                    <p style="opacity: 0.8; font-size: 1.1rem;">Savollaringiz bormi? Biz sizga yordam berishdan xursand bo'lamiz</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="contact-info">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <h4 class="contact-title">Telefon</h4>
+                        <p class="contact-detail">+998 95 182 22 23</p>
+                        <p class="contact-detail">+998 99 880 20 83</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="contact-info">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h4 class="contact-title">Email</h4>
+                        <p class="contact-detail">xabibullayev186@gmail.com</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="contact-info">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <h4 class="contact-title">Manzil</h4>
+                        <p class="contact-detail">Toshkent shahri, Online</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="footer-brand">
+                        <h3 class="footer-logo">StreetStil®</h3>
+                        <p class="footer-description">O'zbekistondagi eng zamonaviy ko'cha kiyimlari do'koni. Sifatli mahsulotlar va professional xizmat.</p>
+                        <div class="social-links">
+                            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-telegram"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h4 class="footer-title">Mahsulotlar</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Yangi kelganlar</a></li>
+                        <li><a href="#">Kiyimlar</a></li>
+                        <li><a href="#">Kepkalar</a></li>
+                        <li><a href="#">Ko'zoynaklar</a></li>
+                        <li><a href="#">Aksessuarlar</a></li>
+                        <li><a href="#">Fudbolkalar</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h4 class="footer-title">Xizmatlar</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Buyurtma kuzatish</a></li>
+                        <li><a href="#">Yetkazib berish</a></li>
+                        <li><a href="#">Qaytarish</a></li>
+                        <li><a href="#">Kredit</a></li>
+                        <li><a href="#">Hamkorlik</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h4 class="footer-title">Kompaniya</h4>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'about_us' %}">Biz haqida</a></li>
+                        <li><a href="#">Yangiliklar</a></li>
+                        <li><a href="#">Karyera</a></li>
+                        <li><a href="#">Hamkorlar</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h4 class="footer-title">Yordam</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Mijozlar xizmati</a></li>
+                        <li><a href="#">Texnik yordam</a></li>
+                        <li><a href="#">Shikoyatlar</a></li>
+                        <li><a href="#">Tavsiyalar</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-divider"></div>
+            
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="footer-bottom-left">
+                        <p class="copyright">© 2025 StreetStil®. Barcha huquqlar himoyalangan.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="footer-bottom-right">
+                        <div class="payment-methods">
+                            <span class="payment-label">To'lov usullari:</span>
+                            <div class="payment-icons">
+                                <i class="fab fa-cc-visa"></i>
+                                <i class="fab fa-cc-mastercard"></i>
+                                <i class="fab fa-cc-paypal"></i>
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleProfileMenu() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.profile-icon') && !event.target.matches('.fas')) {
+                const dropdowns = document.getElementsByClassName('profile-dropdown');
+                for (let dropdown of dropdowns) {
+                    if (dropdown.classList.contains('show')) {
+                        dropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html> 
