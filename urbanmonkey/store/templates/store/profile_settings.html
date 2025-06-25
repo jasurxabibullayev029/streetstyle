@@ -1,0 +1,724 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil sozlamalari - StreetStil®</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <style>
+        .profile-settings-container {
+            padding: 40px 0;
+        }
+        .profile-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 30px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .avatar-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .current-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 3px solid #f0f0f0;
+        }
+        .avatar-upload {
+            position: relative;
+            display: inline-block;
+        }
+        .avatar-upload input[type=file] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        .avatar-upload-btn {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+        .avatar-upload-btn:hover {
+            background: #555;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #333;
+        }
+        .save-btn {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+            width: 100%;
+        }
+        .save-btn:hover {
+            background: #555;
+        }
+        .save-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .back-btn {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .back-btn:hover {
+            background: #555;
+            color: white;
+            text-decoration: none;
+        }
+        .profile-stats {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .stat-item:last-child {
+            margin-bottom: 0;
+        }
+        .stat-label {
+            font-weight: bold;
+            color: #333;
+        }
+        .stat-value {
+            color: #666;
+        }
+        .deposit-section {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            border: 1px solid #e0e0e0;
+        }
+        .deposit-section h5 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .current-balance {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+        }
+        .balance-label {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+        .balance-amount {
+            color: #e74c3c;
+            font-size: 18px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .deposit-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .deposit-btn:hover {
+            background: linear-gradient(135deg, #764ba2, #667eea);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        .deposit-btn:disabled {
+            background: linear-gradient(135deg, #bdc3c7, #95a5a6);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h5 {
+            margin: 0;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+        
+        .close:hover {
+            color: #333;
+        }
+        
+        .modal-body {
+            padding: 25px;
+        }
+        
+        .modal-body .current-balance {
+            margin-bottom: 20px;
+        }
+        
+        .modal-body .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .modal-body .deposit-btn {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    {% csrf_token %}
+    <!-- Top Banner -->
+    <div class="top-banner">
+        <div class="banner-text">
+            KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <h1 class="logo">StreetStil®</h1>
+                </div>
+                <div class="col-md-6">
+                    <div class="search-bar">
+                        <input type="text" placeholder="qidirish" class="search-input">
+                    </div>
+                </div>
+                <div class="col-md-3 text-end">
+                    <div class="profile-section">
+                        <div class="profile-icon" onclick="toggleProfileMenu()">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="profile-header">
+                                <div class="profile-avatar">
+                                    {% if user_data.avatar %}
+                                        <img src="{{ user_data.avatar.url }}" alt="{{ user_data.name }}" class="avatar-img">
+                                    {% else %}
+                                        <i class="fas fa-user-circle"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="profile-info">
+                                    <h4>{{ user_data.name }}</h4>
+                                    <p>{{ user_data.email }}</p>
+                                </div>
+                            </div>
+                            <div class="profile-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Balans:</span>
+                                    <span class="stat-value">{{ user_data.balance|floatformat:0 }} so'm</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Buyurtmalar:</span>
+                                    <span class="stat-value">{{ user_data.orders_count }} ta</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Bonus ballar:</span>
+                                    <span class="stat-value">{{ user_data.bonus_points }}</span>
+                                </div>
+                            </div>
+                            <div class="profile-menu">
+                                <a href="{% url 'my_orders' %}" class="menu-item">
+                                    <i class="fas fa-shopping-bag"></i>
+                                    Mening buyurtmalarim
+                                </a>
+                                <a href="{% url 'my_favorites' %}" class="menu-item">
+                                    <i class="fas fa-heart"></i>
+                                    Sevimlilar
+                                </a>
+                                <a href="{% url 'profile_settings' %}" class="menu-item active">
+                                    <i class="fas fa-cog"></i>
+                                    Sozlamalar
+                                </a>
+                                <a href="{% url 'wallet' %}" class="menu-item">
+                                    <i class="fas fa-wallet"></i>
+                                    Hamyon
+                                </a>
+                                <a href="{% url 'deposit_page' %}" class="menu-item">
+                                    <i class="fas fa-credit-card"></i>
+                                    Pul to'ldirish
+                                </a>
+                                <a href="{% url 'pay_page' %}" class="menu-item">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                    Pul Tolash
+                                </a>
+                                <a href="{% url 'user_logout' %}" class="menu-item logout">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Chiqish
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="container">
+            <ul class="nav-list">
+                <li><a href="{% url 'product_list' %}" class="nav-link">Bosh sahifa</a></li>
+                <li><a href="#" class="nav-link">qayta sotuv yo'q</a></li>
+                <li><a href="#" class="nav-link">tizimlar</a></li>
+                <li><a href="#" class="nav-link">ko'zoynaklar</a></li>
+                <li><a href="#" class="nav-link">qalpoqlar va shapkalar</a></li>
+                <li><a href="#" class="nav-link">klub fudbolkalari<span class="new-badge">yangi</span></a></li>
+                <li><a href="#" class="nav-link">kiyimlar</a></li>
+                <li><a href="#" class="nav-link">aksessuarlar</a></li>
+                <li><a href="#" class="nav-link">hamkorliklar</a></li>
+                <li><a href="{% url 'about_us' %}" class="nav-link">biz haqida</a></li>
+                <li><a href="#" class="nav-link">kelgusi</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Profile Settings Section -->
+    <section class="profile-settings-container">
+        <div class="container">
+            <a href="{% url 'product_list' %}" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Bosh sahifaga qaytish
+            </a>
+            <div class="profile-card">
+                <!-- Profile Stats -->
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Balans:</span>
+                        <span class="stat-value">{{ user_data.balance|floatformat:0 }} so'm</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Buyurtmalar:</span>
+                        <span class="stat-value">{{ user_data.orders_count }} ta</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Bonus ballar:</span>
+                        <span class="stat-value">{{ user_data.bonus_points }}</span>
+                    </div>
+                </div>
+                <!-- Avatar Section -->
+                <div class="avatar-section">
+                    <img src="{% if user_data.avatar %}{{ user_data.avatar.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}" 
+                         alt="Profile Avatar" class="current-avatar" id="currentAvatar">
+                    <div class="avatar-upload">
+                        <label for="avatarInput" class="avatar-upload-btn">
+                            <i class="fas fa-camera"></i> Rasm o'zgartirish
+                        </label>
+                        <input type="file" id="avatarInput" name="avatar" accept="image/*" onchange="previewAvatar(this)">
+                    </div>
+                </div>
+                <!-- Account Information Form -->
+                <form id="profileForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="firstName">Ism</label>
+                        <input type="text" id="firstName" name="first_name" value="{{ user_data.first_name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Familiya</label>
+                        <input type="text" id="lastName" name="last_name" value="{{ user_data.last_name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" value="{{ user_data.email }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Telefon raqami</label>
+                        <input type="tel" id="phone" name="phone" value="{{ user_data.phone }}" placeholder="+998 90 123 45 67">
+                    </div>
+                    <button type="submit" class="save-btn" id="saveBtn">
+                        <i class="fas fa-save"></i> Saqlash
+                    </button>
+                </form>
+                <!-- Pul to'ldirish bo'limi olib tashlandi -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h4>ZO'R NARSALAR</h4>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'about_us' %}">biz haqida</a></li>
+                        <li><a href="#">BLOG</a></li>
+                        <li><a href="#">HAMMA NARSANI SOTIB OLING</a></li>
+                        <li><a href="#">YANGI KELGANLAR</a></li>
+                        <li><a href="#">QALPOQLAR VA SHAPKALAR</a></li>
+                        <li><a href="#">KIYIMLAR</a></li>
+                        <li><a href="#">KO'ZOYNAKLAR</a></li>
+                        <li><a href="#">AKSESSUARLAR</a></li>
+                        <li><a href="#">HAMKORLIKLAR</a></li>
+                        <li><a href="#">Mukofotlar</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h4>ZAHIRIY NARSALAR</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">BUYURTMA KUZATISH</a></li>
+                        <li><a href="#">QAYTARISH</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h4>HUQUQIY</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">SHARTLAR VA SHAROITLAR</a></li>
+                        <li><a href="#">MAXFIYLIK SIYOSATI</a></li>
+                        <li><a href="#">YETKAZIB BERISH SIYOSATI</a></li>
+                        <li><a href="#">QAYTARISH SIYOSATI</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h4>Keling, bog'lanish</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">WHATSAPP</a></li>
+                        <li><a href="#">EMAIL</a></li>
+                        <li><a href="#">biz bilan bog'laning</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Mualliflik huquqi © 2025 StreetStil® - Bosh kiyimlar, Fudbolkalar, Quyosh ko'zoynaklari, Hamyonlar, Yuz niqoblari, Shapkalar. Skateboardlar</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Deposit Modal -->
+    <div id="depositModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Pul to'ldirish</h5>
+                <span class="close" onclick="closeDepositModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="current-balance">
+                    <span class="balance-label">Joriy balans:</span>
+                    <span class="balance-amount" id="modalCurrentBalance">{{ user_data.balance|floatformat:0 }} so'm</span>
+                </div>
+                
+                <form id="modalDepositForm">
+                    <div class="form-group">
+                        <label for="modalAmount">To'lov miqdori (so'm)</label>
+                        <input type="number" id="modalAmount" name="amount" min="1000" step="1000" placeholder="10000" required>
+                        <small class="text-muted">Minimal to'lov: 1,000 so'm</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalCardNumber">Karta raqami</label>
+                        <input type="text" id="modalCardNumber" name="card_number" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                        <small class="text-muted">16 ta raqam kiriting</small>
+                    </div>
+                    <button type="submit" class="deposit-btn" id="modalDepositBtn">
+                        <i class="fas fa-credit-card"></i> Pul to'ldirish
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleProfileMenu() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        function showDepositModal() {
+            document.getElementById('depositModal').style.display = 'block';
+            // Close profile dropdown when opening modal
+            document.getElementById('profileDropdown').classList.remove('show');
+        }
+
+        function closeDepositModal() {
+            document.getElementById('depositModal').style.display = 'none';
+            // Reset form
+            document.getElementById('modalDepositForm').reset();
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('depositModal');
+            if (event.target === modal) {
+                closeDepositModal();
+            }
+        }
+
+        function previewAvatar(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('currentAvatar').src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #333;
+                color: white;
+                padding: 10px 20px;
+                border-radius: 5px;
+                z-index: 1000;
+                font-size: 14px;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Card number formatting
+        document.getElementById('card_number').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+            let formattedValue = '';
+            
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 4 === 0) {
+                    formattedValue += ' ';
+                }
+                formattedValue += value[i];
+            }
+            
+            e.target.value = formattedValue;
+        });
+        
+        // Modal card number formatting
+        document.getElementById('modalCardNumber').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+            let formattedValue = '';
+            
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 4 === 0) {
+                    formattedValue += ' ';
+                }
+                formattedValue += value[i];
+            }
+            
+            e.target.value = formattedValue;
+        });
+        
+        // Deposit form submission
+        document.getElementById('depositForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const depositBtn = document.getElementById('depositBtn');
+            
+            depositBtn.disabled = true;
+            depositBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> To\'lov amalga oshirilmoqda...';
+            
+            fetch('{% url "deposit_money" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(data.message);
+                    // Update balance display
+                    document.getElementById('currentBalance').textContent = data.new_balance + ' so\'m';
+                    // Update balance in header dropdown
+                    const headerBalance = document.querySelector('.profile-stats .stat-value');
+                    if (headerBalance) {
+                        headerBalance.textContent = data.new_balance + ' so\'m';
+                    }
+                    // Clear form
+                    document.getElementById('depositForm').reset();
+                } else {
+                    alert('Xatolik: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Xatolik yuz berdi');
+            })
+            .finally(() => {
+                depositBtn.disabled = false;
+                depositBtn.innerHTML = '<i class="fas fa-credit-card"></i> Pul to\'ldirish';
+            });
+        });
+        
+        // Modal deposit form submission
+        document.getElementById('modalDepositForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const modalDepositBtn = document.getElementById('modalDepositBtn');
+            
+            modalDepositBtn.disabled = true;
+            modalDepositBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> To\'lov amalga oshirilmoqda...';
+            
+            fetch('{% url "deposit_money" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(data.message);
+                    // Update all balance displays
+                    document.getElementById('currentBalance').textContent = data.new_balance + ' so\'m';
+                    document.getElementById('modalCurrentBalance').textContent = data.new_balance + ' so\'m';
+                    // Update balance in header dropdown
+                    const headerBalance = document.querySelector('.profile-stats .stat-value');
+                    if (headerBalance) {
+                        headerBalance.textContent = data.new_balance + ' so\'m';
+                    }
+                    // Close modal and clear form
+                    closeDepositModal();
+                } else {
+                    alert('Xatolik: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Xatolik yuz berdi');
+            })
+            .finally(() => {
+                modalDepositBtn.disabled = false;
+                modalDepositBtn.innerHTML = '<i class="fas fa-credit-card"></i> Pul to\'ldirish';
+            });
+        });
+        
+        // Profile form submission
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const saveBtn = document.getElementById('saveBtn');
+            
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saqlanmoqda...';
+            
+            fetch('{% url "update_profile" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(data.message);
+                    // Update header profile info if needed
+                    const headerName = document.querySelector('.profile-info h4');
+                    if (headerName) {
+                        headerName.textContent = data.user_name;
+                    }
+                } else {
+                    alert('Xatolik: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Xatolik yuz berdi');
+            })
+            .finally(() => {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fas fa-save"></i> Saqlash';
+            });
+        });
+    </script>
+</body>
+</html> 

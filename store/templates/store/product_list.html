@@ -415,7 +415,7 @@
                 <div class="product-card">
                     <div class="product-image">
                         <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img front-img" data-back="{% if product.back_image %}{{ product.back_image.url }}{% else %}{{ product.image.url }}{% endif %}">
-                        <img src="{% if product.back_image %}{{ product.back_image.url }}{% else %}{{ product.image.url }}{% endif %}" alt="{{ product.name }} orqa tomon" class="product-img back-img" style="display: none;">
+                        <img src="{% if product.back_image %}{{ product.back_image.url }}{% else %}{{ product.image.url }}{% endif %}" alt="{{ product.name }} orqa tomon" class="product-img back-img">
                         <div class="image-overlay">
                             <span class="view-text">Orqa tomonni ko'rish uchun bosing</span>
                         </div>

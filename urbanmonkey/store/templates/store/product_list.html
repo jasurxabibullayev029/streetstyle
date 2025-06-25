@@ -1,0 +1,885 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreetStil® - Bosh kiyimlar, Fudbolkalar, Quyosh ko'zoynaklari, Hamyonlar</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <style>
+        .product-price-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .product-price {
+            margin: 0;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        .like-btn {
+            background: none;
+            border: none;
+            color: #ccc;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        .like-btn:hover {
+            color: #ff6b6b;
+            transform: scale(1.1);
+        }
+        .like-btn.liked {
+            color: #ff6b6b;
+        }
+        .like-btn.liked:hover {
+            color: #ccc;
+        }
+        .auth-section {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        .register-btn {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+        .register-btn:hover {
+            background: #555;
+        }
+        .auth-modal .modal-header {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .auth-tabs {
+            display: flex;
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 20px;
+        }
+        .auth-tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .auth-tab.active {
+            border-bottom-color: #333;
+            color: #333;
+            font-weight: bold;
+        }
+        .auth-tab:hover {
+            background: #f8f9fa;
+        }
+        .auth-form {
+            display: none;
+        }
+        .auth-form.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #333;
+        }
+        .auth-submit-btn {
+            width: 100%;
+            background: #333;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+        .auth-submit-btn:hover {
+            background: #555;
+        }
+        .auth-submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .avatar-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .footer {
+            background: #000;
+            color: #fff;
+            padding: 60px 0 30px;
+        }
+        
+        .footer-brand {
+            margin-bottom: 20px;
+        }
+        
+        .footer-logo {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+        
+        .footer-description {
+            color: #ccc;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .social-link:hover {
+            background: #fff;
+            color: #000;
+            transform: translateY(-2px);
+        }
+        
+        .footer-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #fff;
+            position: relative;
+        }
+        
+        .footer-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: #fff;
+        }
+        
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .footer-links a:hover {
+            color: #fff;
+        }
+        
+        .footer-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+            margin: 40px 0 30px;
+        }
+        
+        .footer-bottom-left {
+            text-align: left;
+        }
+        
+        .footer-bottom-right {
+            text-align: right;
+        }
+        
+        .copyright {
+            color: #ccc;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .payment-methods {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+        
+        .payment-label {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+        
+        .payment-icons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .payment-icons i {
+            font-size: 1.5rem;
+            color: #ccc;
+            transition: color 0.3s ease;
+        }
+        
+        .payment-icons i:hover {
+            color: #fff;
+        }
+        
+        @media (max-width: 768px) {
+            .footer-bottom-left,
+            .footer-bottom-right {
+                text-align: center;
+            }
+            
+            .payment-methods {
+                justify-content: center;
+                margin-top: 20px;
+            }
+            
+            .social-links {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% csrf_token %}
+    <!-- Top Banner -->
+    <div class="top-banner">
+        <div class="banner-text">
+            KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <h1 class="logo">StreetStil®</h1>
+                </div>
+                <div class="col-md-6">
+                    <div class="search-bar">
+                        <form method="get" action="">
+                            <input type="text" placeholder="qidirish" class="search-input" name="q" value="{{ request.GET.q|default:'' }}">
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-3 text-end">
+                    {% if user.is_authenticated %}
+                    <div class="profile-section">
+                        <div class="profile-icon" onclick="toggleProfileMenu()">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="profile-header">
+                                <div class="profile-avatar">
+                                    {% if user_data.avatar %}
+                                        <img src="{{ user_data.avatar.url }}" alt="{{ user_data.name }}" class="avatar-img">
+                                    {% else %}
+                                        <i class="fas fa-user-circle"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="profile-info">
+                                    <h4>{{ user_data.name }}</h4>
+                                    <p>{{ user_data.email }}</p>
+                                </div>
+                            </div>
+                            <div class="profile-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Balans:</span>
+                                    <span class="stat-value">{{ user_data.balance|floatformat:0 }} so'm</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Buyurtmalar:</span>
+                                    <span class="stat-value">{{ user_data.orders_count }} ta</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Bonus ballar:</span>
+                                    <span class="stat-value">{{ user_data.bonus_points }}</span>
+                                </div>
+                            </div>
+                            <div class="profile-menu">
+                                <a href="{% url 'my_orders' %}" class="menu-item">
+                                    <i class="fas fa-shopping-bag"></i>
+                                    Mening buyurtmalarim
+                                </a>
+                                <a href="{% url 'my_favorites' %}" class="menu-item">
+                                    <i class="fas fa-heart"></i>
+                                    Sevimlilar
+                                </a>
+                                <a href="{% url 'profile_settings' %}" class="menu-item">
+                                    <i class="fas fa-cog"></i>
+                                    Sozlamalar
+                                </a>
+                                <a href="{% url 'wallet' %}" class="menu-item">
+                                    <i class="fas fa-wallet"></i>
+                                    Hamyon
+                                </a>
+                                <a href="{% url 'user_logout' %}" class="menu-item logout">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Chiqish
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="auth-section">
+                        <button class="register-btn" onclick="openAuthModal()">
+                            <i class="fas fa-user-plus"></i>
+                            Registratsiya
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="container">
+            <ul class="nav-list">
+                <li><a href="#" class="nav-link">qayta sotuv yo'q</a></li>
+                <li><a href="#" class="nav-link">tizimlar</a></li>
+                <li><a href="#" class="nav-link">ko'zoynaklar</a></li>
+                <li><a href="#" class="nav-link">qalpoqlar va shapkalar</a></li>
+                <li><a href="#" class="nav-link">klub fudbolkalari<span class="new-badge">yangi</span></a></li>
+                <li><a href="{% url 'clothing' %}" class="nav-link">kiyimlar</a></li>
+                <li><a href="#" class="nav-link">aksessuarlar</a></li>
+                <li><a href="#" class="nav-link">hamkorliklar</a></li>
+                <li><a href="{% url 'about_us' %}" class="nav-link">biz haqida</a></li>
+                <li><a href="#" class="nav-link">kelgusi</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <h2 class="hero-title">O'z uslubingizni toping</h2>
+                <p class="hero-subtitle">StreetStil® da eng so'nggi ko'cha kiyimlari modalarini sotib oling</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products-section">
+        <div class="container">
+            <div class="products-grid">
+                {% for product in products %}
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img front-img" data-back="{% if product.back_image %}{{ product.back_image.url }}{% else %}{{ product.image.url }}{% endif %}">
+                        <img src="{% if product.back_image %}{{ product.back_image.url }}{% else %}{{ product.image.url }}{% endif %}" alt="{{ product.name }} orqa tomon" class="product-img back-img" style="display: none;">
+                        <div class="image-overlay">
+                            <span class="view-text">Orqa tomonni ko'rish uchun bosing</span>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">{{ product.name }}</h3>
+                        <div class="product-price-section">
+                            <p class="product-price">{{ product.price }} so'm</p>
+                            <button class="like-btn {% if product.id in user_favorites %}liked{% endif %}" 
+                                    onclick="toggleFavorite({{ product.id }}, this)" 
+                                    title="{% if product.id in user_favorites %}Sevimlilardan olib tashlash{% else %}Sevimlilarga qo'shish{% endif %}">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        </div>
+                        <button class="buy-btn" onclick="openBuyModal({{ product.id }}, '{{ product.name }}', {{ product.price }})">
+                            Sotib olish
+                        </button>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="no-products">
+                    <p>Mahsulotlar mavjud emas.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Buy Modal -->
+    <div class="modal fade" id="buyModal" tabindex="-1" aria-labelledby="buyModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="buyModalLabel">Mahsulot sotib olish</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="product-details">
+                        <h6 id="modalProductName"></h6>
+                        <p id="modalProductPrice"></p>
+                    </div>
+                    <form id="buyForm">
+                        <input type="hidden" id="productId" name="product_id">
+                        <div class="mb-3">
+                            <label for="size" class="form-label">Razmer</label>
+                            <select class="form-select" id="size" name="size" required>
+                                <option value="">Razmer tanlang</option>
+                                <option value="XS">XS</option>
+                                <option value="S">S</option>
+                                <option value="M">M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                                <option value="XXL">XXL</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label">Miqdori</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="10" value="1" required>
+                        </div>
+                        <div class="total-section">
+                            <h6>Jami: <span id="totalPrice">0</span> so'm</h6>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor qilish</button>
+                    <button type="button" class="btn btn-primary" onclick="placeOrder()">Sotib olish</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Authentication Modal -->
+    <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content auth-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="authModalLabel">Akkaunt</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="auth-tabs">
+                        <div class="auth-tab active" onclick="switchAuthTab('register')">Registratsiya</div>
+                        <div class="auth-tab" onclick="switchAuthTab('login')">Kirish</div>
+                    </div>
+                    
+                    <!-- Registration Form -->
+                    <form id="registerForm" class="auth-form active">
+                        <div class="form-group">
+                            <label for="regName">To'liq ism</label>
+                            <input type="text" id="regName" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regEmail">Email</label>
+                            <input type="email" id="regEmail" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regPhone">Telefon raqam</label>
+                            <input type="tel" id="regPhone" name="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regPassword">Parol</label>
+                            <input type="password" id="regPassword" name="password" required>
+                        </div>
+                        <button type="submit" class="auth-submit-btn">Ro'yxatdan o'tish</button>
+                    </form>
+                    
+                    <!-- Login Form -->
+                    <form id="loginForm" class="auth-form">
+                        <div class="form-group">
+                            <label for="loginEmail">Email</label>
+                            <input type="email" id="loginEmail" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Parol</label>
+                            <input type="password" id="loginPassword" name="password" required>
+                        </div>
+                        <button type="submit" class="auth-submit-btn">Kirish</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Newsletter Section -->
+    <!-- (Removed newsletter section as requested) -->
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="footer-brand">
+                        <h3 class="footer-logo">StreetStil®</h3>
+                        <p class="footer-description">O'zbekistondagi eng zamonaviy ko'cha kiyimlari do'koni. Sifatli mahsulotlar va professional xizmat.</p>
+                        <div class="social-links">
+                            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                            <a href="https://t.me/StreetStil_uz" class="social-link"><i class="fab fa-telegram"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h4 class="footer-title">ABOUT</h4>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'about_us' %}">Biz haqida</a></li>
+                        <li><a href="#">Kiyimlar</a></li>
+                        <li><a href="{% url 'clothing' %}">Fudbolkalar</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-divider"></div>
+            
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="footer-bottom-left">
+                        <p class="copyright">© 2025 StreetStil®. Barcha huquqlar himoyalangan.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="footer-bottom-right">
+                        <div class="payment-methods">
+                            <span class="payment-label">To'lov usullari:</span>
+                            <div class="payment-icons">
+                                <i class="fab fa-cc-visa"></i>
+                                <i class="fab fa-cc-mastercard"></i>
+                                <i class="fab fa-cc-paypal"></i>
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentProductPrice = 0;
+        let buyModal;
+        let authModal;
+
+        // Image flip functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const productImages = document.querySelectorAll('.product-image');
+            
+            productImages.forEach(function(imageContainer) {
+                imageContainer.addEventListener('click', function() {
+                    this.classList.toggle('flipped');
+                });
+            });
+        });
+
+        function toggleProfileMenu() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        function toggleFavorite(productId, button) {
+            const formData = new FormData();
+            formData.append('product_id', productId);
+            
+            fetch('{% url "toggle_favorite" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.is_favorited) {
+                        button.classList.add('liked');
+                        button.title = 'Sevimlilardan olib tashlash';
+                    } else {
+                        button.classList.remove('liked');
+                        button.title = 'Sevimlilarga qo\'shish';
+                    }
+                    // Show a small notification
+                    showNotification(data.message);
+                } else {
+                    alert('Xatolik: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Xatolik yuz berdi');
+            });
+        }
+
+        function showNotification(message) {
+            // Create a simple notification
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #333;
+                color: white;
+                padding: 10px 20px;
+                border-radius: 5px;
+                z-index: 1000;
+                font-size: 14px;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function openBuyModal(productId, productName, productPrice) {
+            currentProductPrice = productPrice;
+            document.getElementById('productId').value = productId;
+            document.getElementById('modalProductName').textContent = productName;
+            document.getElementById('modalProductPrice').textContent = productPrice + ' so\'m';
+            document.getElementById('totalPrice').textContent = productPrice;
+            
+            // Reset form
+            document.getElementById('size').value = '';
+            document.getElementById('quantity').value = '1';
+            document.querySelector('.btn-primary').disabled = true;
+            document.querySelector('.btn-primary').textContent = 'Razmer va miqdorni tanlang';
+            
+            buyModal = new bootstrap.Modal(document.getElementById('buyModal'));
+            buyModal.show();
+        }
+
+        function updateTotal() {
+            const quantity = document.getElementById('quantity').value;
+            const size = document.getElementById('size').value;
+            const total = currentProductPrice * quantity;
+            document.getElementById('totalPrice').textContent = total;
+            
+            // Enable/disable buy button
+            const buyButton = document.querySelector('.btn-primary');
+            if (size && quantity > 0) {
+                buyButton.disabled = false;
+                buyButton.textContent = 'Sotib olish';
+            } else {
+                buyButton.disabled = true;
+                buyButton.textContent = 'Razmer va miqdorni tanlang';
+            }
+        }
+
+        function placeOrder() {
+            const size = document.getElementById('size').value;
+            const quantity = document.getElementById('quantity').value;
+            
+            if (!size) {
+                alert('Iltimos, razmer tanlang!');
+                return;
+            }
+            
+            if (!quantity || quantity < 1) {
+                alert('Iltimos, miqdorni tanlang!');
+                return;
+            }
+            
+            const form = document.getElementById('buyForm');
+            const formData = new FormData(form);
+            
+            // Show loading state
+            const buyButton = document.querySelector('.btn-primary');
+            buyButton.disabled = true;
+            buyButton.textContent = 'Buyurtma berilmoqda...';
+            
+            fetch('/place-order/', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Buyurtma muvaffaqiyatli qabul qilindi!\n\nBuyurtma ID: ' + data.order_id + '\nJami summa: ' + data.total_amount + ' so\'m');
+                    buyModal.hide();
+                    location.reload(); // Sahifani yangilash
+                } else {
+                    alert('Xatolik: ' + data.error);
+                    buyButton.disabled = false;
+                    buyButton.textContent = 'Sotib olish';
+                }
+            })
+            .catch(error => {
+                alert('Xatolik yuz berdi: ' + error);
+                buyButton.disabled = false;
+                buyButton.textContent = 'Sotib olish';
+            });
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Event listeners
+        document.getElementById('quantity').addEventListener('change', updateTotal);
+        document.getElementById('quantity').addEventListener('input', updateTotal);
+        document.getElementById('size').addEventListener('change', updateTotal);
+
+        // Close dropdown when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.profile-icon') && !event.target.matches('.fas')) {
+                const dropdowns = document.getElementsByClassName('profile-dropdown');
+                for (let dropdown of dropdowns) {
+                    if (dropdown.classList.contains('show')) {
+                        dropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+
+        function openAuthModal() {
+            authModal = new bootstrap.Modal(document.getElementById('authModal'));
+            authModal.show();
+        }
+
+        function switchAuthTab(tab) {
+            // Update tab styles
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            
+            if (tab === 'register') {
+                document.querySelector('.auth-tab:first-child').classList.add('active');
+                document.getElementById('registerForm').classList.add('active');
+            } else {
+                document.querySelector('.auth-tab:last-child').classList.add('active');
+                document.getElementById('loginForm').classList.add('active');
+            }
+        }
+
+        function handleRegister(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const submitBtn = event.target.querySelector('.auth-submit-btn');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Ro\'yxatdan o\'tish...';
+            
+            fetch('{% url "user_register" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(data.message);
+                    authModal.hide();
+                    location.reload(); // Reload to show logged-in state
+                } else {
+                    alert('Xatolik: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Xatolik yuz berdi');
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Ro\'yxatdan o\'tish';
+            });
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const submitBtn = event.target.querySelector('.auth-submit-btn');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Kirish...';
+            
+            fetch('{% url "user_login" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(data.message);
+                    authModal.hide();
+                    location.reload(); // Reload to show logged-in state
+                } else {
+                    alert('Xatolik: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Xatolik yuz berdi');
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Kirish';
+            });
+        }
+
+        // Add form event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('registerForm').addEventListener('submit', handleRegister);
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+        });
+    </script>
+</body>
+</html> 
