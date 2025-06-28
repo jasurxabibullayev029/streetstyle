@@ -134,6 +134,162 @@
             border-radius: 50%;
             object-fit: cover;
         }
+        
+        /* Improved Hero Section Styles */
+        .hero-slider-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            overflow: hidden;
+            background: #000;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .hero-slider {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .hero-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            z-index: 1;
+            object-fit: cover;
+            object-position: center;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            filter: brightness(1.05) contrast(1.1);
+        }
+        
+        .hero-slide.active {
+            opacity: 1;
+            z-index: 2;
+        }
+        
+        /* Hero overlay for better text readability */
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.4) 100%);
+            z-index: 3;
+            pointer-events: none;
+        }
+        
+        /* Hero content */
+        .hero-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            z-index: 4;
+            width: 90%;
+            max-width: 600px;
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            animation: fadeInUp 1s ease-out;
+            letter-spacing: 2px;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+            animation: fadeInUp 1s ease-out 0.3s both;
+            font-weight: 300;
+        }
+        
+        /* Slider navigation dots */
+        .slider-dots {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 5;
+        }
+        
+        .slider-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .slider-dot.active {
+            background: white;
+            transform: scale(1.2);
+        }
+        
+        .slider-dot:hover {
+            background: rgba(255,255,255,0.8);
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .hero-slider-container {
+                height: 400px;
+            }
+            
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+            
+            .slider-dots {
+                bottom: 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero-slider-container {
+                height: 300px;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 0.9rem;
+            }
+        }
+        
         .footer {
             background: #000;
             color: #fff;
@@ -283,34 +439,6 @@
                 justify-content: center;
             }
         }
-        .hero-slider-container {
-            position: relative;
-            width: 100%;
-            height: 400px;
-            padding-left: 30px;
-            padding-right: 30px;
-            box-sizing: border-box;
-            margin-bottom: 30px;
-        }
-        .hero-slider {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            border-radius: 16px;
-            overflow: hidden;
-        }
-        .hero-slide {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover;
-            opacity: 0;
-            transition: opacity 1s;
-            z-index: 1;
-        }
-        .hero-slide.active {
-            opacity: 1;
-            z-index: 2;
-        }
     </style>
 </head>
 <body>
@@ -428,8 +556,17 @@
     <!-- Hero Section -->
     <div class="hero-slider-container">
         <div class="hero-slider">
-            <img src="/media/dizayn.png" class="hero-slide active" alt="Dizayn" />
-            <img src="/media/orqa.png" class="hero-slide" alt="Orqa" />
+            <img src="/media/dizayn.png" class="hero-slide active" alt="StreetStil Dizayn" />
+            <img src="/media/orqa.png" class="hero-slide" alt="StreetStil Orqa" />
+        </div>
+        
+        <!-- Hero Overlay -->
+        <div class="hero-overlay"></div>
+        
+        <!-- Slider Navigation Dots -->
+        <div class="slider-dots">
+            <div class="slider-dot active" onclick="goToSlide(0)"></div>
+            <div class="slider-dot" onclick="goToSlide(1)"></div>
         </div>
     </div>
 
@@ -953,12 +1090,47 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             const slides = document.querySelectorAll('.hero-slide');
-            let idx = 0;
-            setInterval(() => {
-                slides[idx].classList.remove('active');
-                idx = (idx + 1) % slides.length;
-                slides[idx].classList.add('active');
-            }, 3000);
+            const dots = document.querySelectorAll('.slider-dot');
+            let currentSlide = 0;
+            let slideInterval;
+            
+            // Function to go to specific slide
+            window.goToSlide = function(slideIndex) {
+                // Remove active class from current slide and dot
+                slides[currentSlide].classList.remove('active');
+                dots[currentSlide].classList.remove('active');
+                
+                // Update current slide index
+                currentSlide = slideIndex;
+                
+                // Add active class to new slide and dot
+                slides[currentSlide].classList.add('active');
+                dots[currentSlide].classList.add('active');
+            };
+            
+            // Function to go to next slide
+            function nextSlide() {
+                const nextIndex = (currentSlide + 1) % slides.length;
+                goToSlide(nextIndex);
+            }
+            
+            // Start automatic sliding
+            function startSlideShow() {
+                slideInterval = setInterval(nextSlide, 4000); // Change slide every 4 seconds
+            }
+            
+            // Stop automatic sliding
+            function stopSlideShow() {
+                clearInterval(slideInterval);
+            }
+            
+            // Start the slideshow
+            startSlideShow();
+            
+            // Pause slideshow on hover
+            const heroContainer = document.querySelector('.hero-slider-container');
+            heroContainer.addEventListener('mouseenter', stopSlideShow);
+            heroContainer.addEventListener('mouseleave', startSlideShow);
         });
     </script>
 </body>
