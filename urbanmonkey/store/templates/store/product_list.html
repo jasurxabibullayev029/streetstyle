@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
     <style>
         .product-price-section {
             display: flex;
@@ -283,6 +284,70 @@
                 justify-content: center;
             }
         }
+        .product-image {
+            position: relative;
+            width: 100%;
+            height: 320px; /* yoki kerakli balandlik */
+            overflow: hidden;
+            border-radius: 12px;
+        }
+        .product-img {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: opacity 0.7s;
+            z-index: 1;
+            opacity: 1;
+        }
+        .product-img.back-img {
+            opacity: 0;
+            z-index: 2;
+        }
+        .product-image:hover .back-img,
+        .product-image:focus .back-img {
+            opacity: 1;
+        }
+        .product-image:hover .front-img,
+        .product-image:focus .front-img {
+            opacity: 0;
+        }
+        .hero-overlay .hero-img {
+            opacity: 0;
+            z-index: 1;
+        }
+        .hero-overlay .hero-img.active {
+            opacity: 1;
+            z-index: 2;
+        }
+        /* Button hiding CSS removed */
+        .hero-slider-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            padding-left: 30px;
+            padding-right: 30px;
+            box-sizing: border-box;
+        }
+        .hero-slider {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .hero-slide {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1s;
+            z-index: 1;
+        }
+        .hero-slide.active {
+            opacity: 1;
+            z-index: 2;
+        }
     </style>
 </head>
 <body>
@@ -290,7 +355,7 @@
     <!-- Top Banner -->
     <div class="top-banner">
         <div class="banner-text">
-            KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆
+            KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆
         </div>
     </div>
 
@@ -398,11 +463,18 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="container">
-            <div class="hero-content">
-                <h2 class="hero-title">O'z uslubingizni toping</h2>
-                <p class="hero-subtitle">StreetStil® da eng so'nggi ko'cha kiyimlari modalarini sotib oling</p>
+    <section class="hero-section" style="position:relative; height:400px; overflow:hidden;">
+        <div class="hero-overlay" style="position:absolute; top:0; left:0; right:0; bottom:0; background:linear-gradient(120deg,rgba(0,0,0,0.25) 0%,rgba(0,0,0,0.45) 100%); z-index:2; width:100%; height:100%; overflow:hidden;">
+            <div class="hero-slider-container">
+                <div class="hero-slider">
+                    <img src="/media/dizayn.png" class="hero-slide active" alt="Dizayn" />
+                    <img src="/media/orqa.png" class="hero-slide" alt="Orqa" />
+                </div>
+            </div>
+        </div>
+        <div class="container" style="position: relative; z-index: 3; height: 100%; display: flex; align-items: center;">
+            <div class="hero-content" style="text-align: center; color: white; width: 100%;">
+                <!-- Button olib tashlandi -->
             </div>
         </div>
     </section>
@@ -413,12 +485,9 @@
             <div class="products-grid">
                 {% for product in products %}
                 <div class="product-card">
-                    <div class="product-image">
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img front-img" data-back="{% if product.back_image %}{{ product.back_image.url }}{% else %}{{ product.image.url }}{% endif %}">
-                        <img src="{% if product.back_image %}{{ product.back_image.url }}{% else %}{{ product.image.url }}{% endif %}" alt="{{ product.name }} orqa tomon" class="product-img back-img" style="display: none;">
-                        <div class="image-overlay">
-                            <span class="view-text">Orqa tomonni ko'rish uchun bosing</span>
-                        </div>
+                    <div class="product-image hover-animate">
+                        <img src="/media/futbolka_front.png" class="product-img front-img" alt="Oldi rasm">
+                        <img src="/media/futbolka_back.png" class="product-img back-img" alt="Orqa rasm">
                     </div>
                     <div class="product-info">
                         <h3 class="product-name">{{ product.name }}</h3>
@@ -593,6 +662,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         let currentProductPrice = 0;
         let buyModal;
@@ -733,8 +803,22 @@
                     'X-CSRFToken': getCookie('csrftoken')
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                // Check if response is a redirect (user not authenticated)
+                if (response.redirected || response.status === 302) {
+                    // User is not authenticated, show registration modal
+                    buyModal.hide();
+                    showRegistrationModal();
+                    return null;
+                }
+                return response.json();
+            })
             .then(data => {
+                if (data === null) {
+                    // User was redirected, modal already shown
+                    return;
+                }
+                
                 if (data.success) {
                     alert('Buyurtma muvaffaqiyatli qabul qilindi!\n\nBuyurtma ID: ' + data.order_id + '\nJami summa: ' + data.total_amount + ' so\'m');
                     buyModal.hide();
@@ -746,10 +830,28 @@
                 }
             })
             .catch(error => {
-                alert('Xatolik yuz berdi: ' + error);
-                buyButton.disabled = false;
-                buyButton.textContent = 'Sotib olish';
+                // Check if error is due to authentication
+                if (error.message && error.message.includes('redirect')) {
+                    buyModal.hide();
+                    showRegistrationModal();
+                } else {
+                    alert('Xatolik yuz berdi: ' + error);
+                    buyButton.disabled = false;
+                    buyButton.textContent = 'Sotib olish';
+                }
             });
+        }
+
+        function showRegistrationModal() {
+            // Show authentication modal with registration tab active
+            authModal = new bootstrap.Modal(document.getElementById('authModal'));
+            switchAuthTab('register');
+            authModal.show();
+            
+            // Show message to user
+            setTimeout(() => {
+                alert('Sotib olish uchun avval ro\'yxatdan o\'ting!');
+            }, 100);
         }
 
         function getCookie(name) {
@@ -879,6 +981,55 @@
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('registerForm').addEventListener('submit', handleRegister);
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            
+            // Check if we should show registration modal
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('show_register') === 'true') {
+                // Remove the parameter from URL
+                const newUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+                
+                // Show registration modal
+                setTimeout(() => {
+                    showRegistrationModal();
+                }, 500);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const slides = document.querySelectorAll('.hero-slide');
+            let idx = 0;
+            setInterval(() => {
+                slides[idx].classList.remove('active');
+                idx = (idx + 1) % slides.length;
+                slides[idx].classList.add('active');
+            }, 3000);
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.product-image.auto-slider').forEach(function(slider) {
+                const images = slider.querySelectorAll('img');
+                let current = 0;
+                if (images.length < 2) return;
+                images[0].classList.add('active');
+                setInterval(function() {
+                    images[current].classList.remove('active');
+                    current = (current + 1) % images.length;
+                    images[current].classList.add('active');
+                }, 2000); // 2 sekundda almashadi
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const images = document.querySelectorAll('.hero-overlay .hero-img');
+            let current = 0;
+            if (images.length < 2) return;
+            images[0].classList.add('active');
+            setInterval(function() {
+                images[current].classList.remove('active');
+                current = (current + 1) % images.length;
+                images[current].classList.add('active');
+            }, 2500);
         });
     </script>
 </body>

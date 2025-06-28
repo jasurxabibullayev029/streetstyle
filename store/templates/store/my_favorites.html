@@ -489,8 +489,22 @@
                     'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                // Check if response is a redirect (user not authenticated)
+                if (response.redirected || response.status === 302) {
+                    // User is not authenticated, show registration modal
+                    buyModal.hide();
+                    showRegistrationModal();
+                    return null;
+                }
+                return response.json();
+            })
             .then(data => {
+                if (data === null) {
+                    // User was redirected, modal already shown
+                    return;
+                }
+                
                 if (data.success) {
                     alert(data.message);
                     buyModal.hide();
@@ -501,13 +515,24 @@
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                alert('Xatolik yuz berdi');
+                // Check if error is due to authentication
+                if (error.message && error.message.includes('redirect')) {
+                    buyModal.hide();
+                    showRegistrationModal();
+                } else {
+                    console.error('Error:', error);
+                    alert('Xatolik yuz berdi');
+                }
             })
             .finally(() => {
                 buyButton.disabled = false;
                 buyButton.textContent = 'Sotib olish';
             });
+        }
+
+        function showRegistrationModal() {
+            // Redirect to main page with registration modal
+            window.location.href = '{% url "product_list" %}?show_register=true';
         }
 
         // Add event listeners for form changes

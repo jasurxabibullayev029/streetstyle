@@ -122,6 +122,18 @@
             border-radius: 50%;
             object-fit: cover;
         }
+        .hero-swiper {
+            width: 100%;
+            height: 320px;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        .swiper-slide {
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
     </style>
 </head>
 <body>
@@ -131,6 +143,58 @@
         <div class="banner-text">
             KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆ KLUB FUDBOLKALARI - Hozir jonli! ☆
         </div>
+    </div>
+
+    <!-- Swiper -->
+    <div class="swiper hero-swiper">
+        <div class="swiper-wrapper">
+            <!-- 1-banner -->
+            <div class="swiper-slide" style="background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%); position:relative;">
+                <div style="display:flex;align-items:center;justify-content:space-between;height:100%;padding:40px;">
+                    <div>
+                        <div style="font-size:2.5rem;font-weight:700;color:#fff;line-height:1.1;">
+                            QUEENS GAME<br>
+                            <span style="color:#ff8800;">SPACE MOBILEDA</span><br>
+                            O'YNAYMIZ
+                        </div>
+                        <div style="margin-top:30px;">
+                            <span style="color:#fff;font-size:1.1rem;">iOS</span>
+                            <img src="/media/qr_ios.png" style="width:80px;margin:0 10px;">
+                            <span style="color:#fff;font-size:1.1rem;">Android</span>
+                            <img src="/media/qr_android.png" style="width:80px;">
+                        </div>
+                        <div style="margin-top:30px;">
+                            <span style="background:#fff;color:#222;padding:10px 25px;border-radius:30px;font-weight:600;display:inline-block;">
+                                *MOBIL ILOVANI YANGI VERSIYASINI YUKLAB OLING
+                            </span>
+                        </div>
+                    </div>
+                    <img src="/media/crown.png" style="height:180px;">
+                </div>
+            </div>
+            <!-- 2-banner -->
+            <div class="swiper-slide" style="background: linear-gradient(90deg, #ff512f 0%, #dd2476 100%); position:relative;">
+                <div style="display:flex;align-items:center;justify-content:space-between;height:100%;padding:40px;">
+                    <div>
+                        <div style="font-size:2.5rem;font-weight:700;color:#fff;line-height:1.1;">
+                            YANGI AKSIYA<br>
+                            <span style="color:#ffe600;">CHEGIRMALAR</span><br>
+                            FAOL
+                        </div>
+                        <div style="margin-top:30px;">
+                            <span style="background:#fff;color:#222;padding:10px 25px;border-radius:30px;font-weight:600;display:inline-block;">
+                                *BARCHA MAHSULOTLARGA 20% CHEGIRMA
+                            </span>
+                        </div>
+                    </div>
+                    <img src="/media/discount.png" style="height:180px;">
+                </div>
+            </div>
+        </div>
+        <!-- Swiper navigation -->
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-pagination"></div>
     </div>
 
     <!-- Header -->
@@ -489,8 +553,22 @@
                     'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                // Check if response is a redirect (user not authenticated)
+                if (response.redirected || response.status === 302) {
+                    // User is not authenticated, show registration modal
+                    buyModal.hide();
+                    showRegistrationModal();
+                    return null;
+                }
+                return response.json();
+            })
             .then(data => {
+                if (data === null) {
+                    // User was redirected, modal already shown
+                    return;
+                }
+                
                 if (data.success) {
                     alert(data.message);
                     buyModal.hide();
@@ -501,8 +579,14 @@
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                alert('Xatolik yuz berdi');
+                // Check if error is due to authentication
+                if (error.message && error.message.includes('redirect')) {
+                    buyModal.hide();
+                    showRegistrationModal();
+                } else {
+                    console.error('Error:', error);
+                    alert('Xatolik yuz berdi');
+                }
             })
             .finally(() => {
                 buyButton.disabled = false;
@@ -510,10 +594,33 @@
             });
         }
 
+        function showRegistrationModal() {
+            // Redirect to main page with registration modal
+            window.location.href = '{% url "product_list" %}?show_register=true';
+        }
+
         // Add event listeners for form changes
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('size').addEventListener('change', updateTotal);
             document.getElementById('quantity').addEventListener('change', updateTotal);
+        });
+
+        new Swiper('.hero-swiper', {
+            loop: true,
+            autoplay: {
+                delay: 4000,
+                disableOnInteraction: false,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            effect: 'slide',
+            speed: 800,
         });
     </script>
 </body>

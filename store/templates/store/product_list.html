@@ -283,6 +283,34 @@
                 justify-content: center;
             }
         }
+        .hero-slider-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            padding-left: 30px;
+            padding-right: 30px;
+            box-sizing: border-box;
+            margin-bottom: 30px;
+        }
+        .hero-slider {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .hero-slide {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1s;
+            z-index: 1;
+        }
+        .hero-slide.active {
+            opacity: 1;
+            z-index: 2;
+        }
     </style>
 </head>
 <body>
@@ -398,16 +426,13 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="container">
-            <div class="hero-content">
-                <h2 class="hero-title">O'z uslubingizni toping</h2>
-                <p class="hero-subtitle">StreetStil® da eng so'nggi ko'cha kiyimlari modalarini sotib oling</p>
-            </div>
+    <div class="hero-slider-container">
+        <div class="hero-slider">
+            <img src="/media/dizayn.png" class="hero-slide active" alt="Dizayn" />
+            <img src="/media/orqa.png" class="hero-slide" alt="Orqa" />
         </div>
-    </section>
+    </div>
 
-    <!-- Products Section -->
     <section class="products-section">
         <div class="container">
             <div class="products-grid">
@@ -733,8 +758,22 @@
                     'X-CSRFToken': getCookie('csrftoken')
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                // Check if response is a redirect (user not authenticated)
+                if (response.redirected || response.status === 302) {
+                    // User is not authenticated, show registration modal
+                    buyModal.hide();
+                    showRegistrationModal();
+                    return null;
+                }
+                return response.json();
+            })
             .then(data => {
+                if (data === null) {
+                    // User was redirected, modal already shown
+                    return;
+                }
+                
                 if (data.success) {
                     alert('Buyurtma muvaffaqiyatli qabul qilindi!\n\nBuyurtma ID: ' + data.order_id + '\nJami summa: ' + data.total_amount + ' so\'m');
                     buyModal.hide();
@@ -746,10 +785,28 @@
                 }
             })
             .catch(error => {
-                alert('Xatolik yuz berdi: ' + error);
-                buyButton.disabled = false;
-                buyButton.textContent = 'Sotib olish';
+                // Check if error is due to authentication
+                if (error.message && error.message.includes('redirect')) {
+                    buyModal.hide();
+                    showRegistrationModal();
+                } else {
+                    alert('Xatolik yuz berdi: ' + error);
+                    buyButton.disabled = false;
+                    buyButton.textContent = 'Sotib olish';
+                }
             });
+        }
+
+        function showRegistrationModal() {
+            // Show authentication modal with registration tab active
+            authModal = new bootstrap.Modal(document.getElementById('authModal'));
+            switchAuthTab('register');
+            authModal.show();
+            
+            // Show message to user
+            setTimeout(() => {
+                alert('Sotib olish uchun avval ro\'yxatdan o\'ting!');
+            }, 100);
         }
 
         function getCookie(name) {
@@ -879,6 +936,29 @@
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('registerForm').addEventListener('submit', handleRegister);
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            
+            // Check if we should show registration modal
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('show_register') === 'true') {
+                // Remove the parameter from URL
+                const newUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+                
+                // Show registration modal
+                setTimeout(() => {
+                    showRegistrationModal();
+                }, 500);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const slides = document.querySelectorAll('.hero-slide');
+            let idx = 0;
+            setInterval(() => {
+                slides[idx].classList.remove('active');
+                idx = (idx + 1) % slides.length;
+                slides[idx].classList.add('active');
+            }, 3000);
         });
     </script>
 </body>
